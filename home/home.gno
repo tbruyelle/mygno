@@ -17,7 +17,7 @@ func init() {
 func Render(path string) string {
 	content := md.H1("Tom's Home")
 	content += md.Paragraph("Hello there, I'm Tom, a blockchain engineer at All-In-Bits. Working on improving our future with decentralization!")
-	content += md.H3("Projects' contributions:")
+	content += md.H3("Contributions:")
 	content += md.BulletList(
 		[]string{
 			md.Link("Emeris", "https://github.com/EmerisHQ"),

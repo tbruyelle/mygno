@@ -1,12 +1,11 @@
 package pixels
 
 import (
-	"encoding/base64"
-	"strings"
-
 	"gno.land/p/demo/svg"
+	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
+	"gno.land/p/tom101/svgimg"
 )
 
 var c svg.Canvas
@@ -21,18 +20,21 @@ func init() {
 	}
 }
 
+const scale = 4
+
 func Add(x, y int, color string) {
+	// std.AssertOriginCall()
+	x *= scale
+	y *= scale
 	if x < 0 || x > c.Width || y < 0 || y >= c.Height {
 		panic("x or y out of range")
 	}
-	c.DrawRectangle(x, y, 1, 1, color)
+	c.DrawRectangle(x, y, scale, scale, color)
 }
 
 func Render(path string) string {
-	s := ""
+	s := md.H1(ufmt.Sprintf("Pixels (%d)", len(c.Elems)))
 	s += "[[Add a pixel](" + txlink.Call("Add", "100", "100") + ")]\n\n"
-	escapedSVG := strings.ReplaceAll(c.String(), "\"", "'")
-	svg := base64.StdEncoding.EncodeToString([]byte(escapedSVG))
-	s += md.Image("pixelsbase64", "data:image/svg+xml;base64,"+svg) + "\n\n"
+	s += svgimg.Render(c)
 	return s
 }

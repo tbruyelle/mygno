@@ -15,6 +15,7 @@ func init() {
 	hof.Register("Tom's Home Realm", "")
 }
 
+// TODO put each section in store, fill them in init and add tx to update them
 func Render(path string) string {
 	content := md.H1("Tom's Home")
 	content += md.Paragraph("Hello there, I'm Tom, a blockchain engineer at All-In-Bits. Working on improving our future with decentralization!")

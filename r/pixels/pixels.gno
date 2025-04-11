@@ -15,6 +15,8 @@ import (
 // TODO
 // - list of canvas with the most gas used or most pixels
 // - use p/demo/releases for smooth upgrade
+// - find a way to optimize gas consuption: for example store each coords a
+// a sub avl tree?
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
@@ -65,7 +67,7 @@ const (
 	height = 600
 )
 
-func CreateCanvas(fillColor string) {
+func CreateCanvas(fillColor string) string {
 	std.AssertOriginCall()
 	id++
 	sid := strconv.Itoa(id)
@@ -93,6 +95,24 @@ func CreateCanvas(fillColor string) {
 	} else {
 		canvasByAdr.Set(caller.String(), []string{sid})
 	}
+	return sid
+}
+func DeleteCanvas(id string) {
+	std.AssertOriginCall()
+	caller := std.OriginCaller()
+	idsi, ok := canvasByAdr.Get(caller.String())
+	if ok {
+		ids := idsi.([]string)
+		for i := range ids {
+			if ids[i] == id {
+				canvasByID.Remove(id)
+				ids = append(ids[:i], ids[i+1:]...)
+				canvasByAdr.Set(caller.String(), ids)
+				return
+			}
+		}
+	}
+	panic("canvas " + id + "not found")
 }
 
 func AddPixel(id string, x, y int, color string) {
@@ -156,7 +176,7 @@ func Render(path string) string {
 	// show top canvas
 	s += md.H2("Top canvas")
 	if canvasByID.Size() == 0 {
-		s += md.Paragraph("No canvas created yet!")
+		s += md.Paragraph(md.Italic("No canvas created yet!"))
 	} else {
 		canvasByID.Iterate("", "", func(_ string, value any) bool {
 			s += "\n"

@@ -9,6 +9,7 @@ import (
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 	"gno.land/p/tom101/svgimg"
+	"gno.land/r/leon/hor"
 	"gno.land/r/sys/users"
 )
 
@@ -28,6 +29,7 @@ var (
 func init() {
 	canvasByID = avl.Tree{}
 	canvasByAdr = avl.Tree{}
+	hor.Register("Pixels", "r/places subreddit for gno")
 }
 
 type canvas struct {

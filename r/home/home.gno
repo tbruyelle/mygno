@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"gno.land/p/moul/md"
-	"gno.land/r/leon/hof"
+	"gno.land/r/leon/hor"
 	"gno.land/r/tom101/pixels"
 )
 
@@ -17,7 +17,7 @@ var (
 
 func init() {
 	creation = time.Now()
-	hof.Register("Tom's Home Realm", "")
+	hor.Register("Tom's Home Realm", "")
 }
 
 func AddGnoContrib(gnoContrib string) {

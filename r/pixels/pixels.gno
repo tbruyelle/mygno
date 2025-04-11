@@ -126,7 +126,7 @@ func RenderCanvas(id string) string {
 func Render(path string) string {
 	s := md.H1("Pixels")
 	s += md.Paragraph("Remember the " +
-		md.Link("r/places", "https://www.reddit.com/r/place/") +
+		md.Link("r/place", "https://www.reddit.com/r/place/") +
 		" subreddit ? `r/pixels` is the gno realm equivalent of that.")
 	s += md.Blockquote("There is an empty canvas. You may place a pixel upon it. Individually you can create something. Together you can create something more.") + "\n\n"
 	s += md.Paragraph("Create your canvas by calling [[CreateCanvas](" + txlink.Call("CreateCanvas", "fillColor", "") + ")].")

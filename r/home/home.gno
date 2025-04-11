@@ -45,7 +45,7 @@ func Render(path string) string {
 	s += md.BulletList(
 		append(
 			[]string{
-				"[`/r/tom101/pixels`](/r/tom101/pixels): A gno implementation of the [r/place](https://reddit.com/r/place) subreddit.\n\nClick on the following link to contribute: " + pixels.RenderCanvas("1"),
+				"[`/r/tom101/pixels`](/r/tom101/pixels): A gno implementation of the [r/place](https://reddit.com/r/place) subreddit.\n\nDont hesitate to contribue! " + pixels.RenderCanvas("6"),
 				"[`/p/tom101/svgimg`](/p/tom101/svgimg): A hack to display canvas from `/p/demo/svg` in gnoweb",
 			},
 			additionGnoContribs...),

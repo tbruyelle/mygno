@@ -18,6 +18,7 @@ import (
 // - use p/demo/releases for smooth upgrade
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
+// - add a hor upvote boutton directly in the render?
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

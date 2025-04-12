@@ -2,9 +2,7 @@ package pixels
 
 import (
 	"std"
-	"strconv"
 
-	"gno.land/p/demo/avl"
 	"gno.land/p/demo/svg"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
@@ -19,17 +17,16 @@ import (
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
 // - add a hor upvote button directly in the render?
+// - move addPixel to canvasStore
+// - add readers to canvasStore
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
-	id          int
-	canvasByID  avl.Tree
-	canvasByAdr avl.Tree
+	canvasStore *CanvasStore
 )
 
 func init() {
-	canvasByID = avl.Tree{}
-	canvasByAdr = avl.Tree{}
+	canvasStore = newCanvasStore()
 	hor.Register("Pixels", "r/places subreddit for gno")
 }
 
@@ -72,51 +69,12 @@ const (
 
 func CreateCanvas(fillColor string) string {
 	std.AssertOriginCall()
-	id++
-	sid := strconv.Itoa(id)
-	caller := std.OriginCaller()
-
-	c := canvas{
-		id:      sid,
-		creator: caller,
-		canvas: svg.Canvas{
-			Width:  width,
-			Height: height,
-		},
-	}
-	if fillColor != "" {
-		c.canvas.DrawRectangle(0, 0, width, height, fillColor)
-	}
-	// add to canvasById
-	canvasByID.Set(sid, c)
-	// add to canvasByAdr
-	idsi, ok := canvasByAdr.Get(caller.String())
-	if ok {
-		ids := idsi.([]string)
-		ids = append(ids, sid)
-		canvasByAdr.Set(caller.String(), ids)
-	} else {
-		canvasByAdr.Set(caller.String(), []string{sid})
-	}
-	return sid
+	return canvasStore.addCanvas(std.OriginCaller(), fillColor)
 }
 
 func DeleteCanvas(id string) {
 	std.AssertOriginCall()
-	caller := std.OriginCaller()
-	idsi, ok := canvasByAdr.Get(caller.String())
-	if ok {
-		ids := idsi.([]string)
-		for i := range ids {
-			if ids[i] == id {
-				canvasByID.Remove(id)
-				ids = append(ids[:i], ids[i+1:]...)
-				canvasByAdr.Set(caller.String(), ids)
-				return
-			}
-		}
-	}
-	panic("canvas " + id + "not found")
+	canvasStore.deleteCanvas(std.OriginCaller(), id)
 }
 
 func AddPixel(id string, x, y int, color string) {
@@ -128,11 +86,11 @@ func AddPixel(id string, x, y int, color string) {
 		panic("x or y out of range")
 	}
 	c.canvas.DrawRectangle(x, y, scale, scale, color)
-	canvasByID.Set(id, c)
+	canvasStore.byID.Set(id, c)
 }
 
 func getCanvas(id string) canvas {
-	c, ok := canvasByID.Get(id)
+	c, ok := canvasStore.byID.Get(id)
 	if !ok {
 		panic("canvas does not exist for id: " + id)
 	}
@@ -140,7 +98,7 @@ func getCanvas(id string) canvas {
 }
 
 func RenderCanvas(id string) string {
-	c, ok := canvasByID.Get(id)
+	c, ok := canvasStore.byID.Get(id)
 	if !ok {
 		return md.Italic("no canvas found for id " + id)
 	}
@@ -161,7 +119,7 @@ func Render(path string) string {
 	s += md.H2("Your canvas")
 	s += md.Blockquote("Not possible to display your canvas until "+md.Link("#4069", "https://github.com/gnolang/gno/issues/4069")+" is addressed") + "\n\n"
 	/*
-		canvasByAdr.Iterate("", "", func(key string, value any) bool {
+		canvasBy.Adr.Iterate("", "", func(key string, value any) bool {
 			ids := value.([]int)
 			s += md.Blockquote(key)
 			for _, id := range ids {
@@ -169,7 +127,7 @@ func Render(path string) string {
 			}
 			return false
 		})
-		cc, ok := canvasByAdr.Get(std.OriginCaller().String())
+		cc, ok := canvasBy.Adr.Get(std.OriginCaller().String())
 		if ok {
 			for _, id := range cc.([]int) {
 				sid := strconv.Itoa(id)
@@ -182,10 +140,10 @@ func Render(path string) string {
 
 	// show top canvas
 	s += md.H2("Top canvas")
-	if canvasByID.Size() == 0 {
+	if canvasStore.byID.Size() == 0 {
 		s += md.Paragraph(md.Italic("No canvas created yet!"))
 	} else {
-		canvasByID.Iterate("", "", func(_ string, value any) bool {
+		canvasStore.byID.Iterate("", "", func(_ string, value any) bool {
 			s += "\n"
 			s += value.(canvas).render(true)
 			return false

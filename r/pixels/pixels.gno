@@ -18,7 +18,7 @@ import (
 // - use p/demo/releases for smooth upgrade
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
-// - add a hor upvote boutton directly in the render?
+// - add a hor upvote button directly in the render?
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
@@ -100,6 +100,7 @@ func CreateCanvas(fillColor string) string {
 	}
 	return sid
 }
+
 func DeleteCanvas(id string) {
 	std.AssertOriginCall()
 	caller := std.OriginCaller()
@@ -148,6 +149,9 @@ func RenderCanvas(id string) string {
 
 func Render(path string) string {
 	s := md.H1("Pixels")
+	// WIP not working for now
+	s += "[UpVote](" + txlink.Realm("127.0.0.1:8888/r/leon/hor").Call("Upvote", "pkgpath", "/r/tom101/pixels") + ")\n\n"
+
 	s += md.Paragraph("Remember the " +
 		md.Link("r/place", "https://www.reddit.com/r/place/") +
 		" subreddit ? `r/pixels` is the gno realm equivalent of that.")

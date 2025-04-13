@@ -9,3 +9,6 @@ register-user:
 
 create-canvas:
 	gnokey maketx call -pkgpath "gno.land/r/tom101/pixels" -func "CreateCanvas" -args "#FDF5E6" -gas-fee 1000000ugnot -gas-wanted 5000000 -broadcast -chainid "dev" -remote "tcp://127.0.0.1:26657" g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7
+
+add-pixel:
+	gnokey maketx call -pkgpath "gno.land/r/tom101/pixels" -func "AddPixel" -args "1" -args "0" -args "0" -args "blue" -gas-fee 1000000ugnot -gas-wanted 5000000 -broadcast -chainid "dev" -remote "tcp://127.0.0.1:26657" g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7

@@ -3,6 +3,7 @@ package pixels
 import (
 	"std"
 
+	"gno.land/p/demo/seqid"
 	"gno.land/r/leon/hor"
 )
 
@@ -31,17 +32,17 @@ func UpdateAdmin(address std.Address) {
 	admin = address
 }
 
-func CreateCanvas(fillColor string) string {
+func CreateCanvas(fillColor string) seqid.ID {
 	std.AssertOriginCall()
 	return canvasStore.add(std.OriginCaller(), fillColor)
 }
 
-func DeleteCanvas(id string) {
+func DeleteCanvas(id seqid.ID) {
 	std.AssertOriginCall()
 	canvasStore.delete(std.OriginCaller(), id)
 }
 
-func AddPixel(id string, x, y int, color string) {
+func AddPixel(id seqid.ID, x, y int, color string) {
 	std.AssertOriginCall()
 	canvasStore.addPixel(id, x, y, color)
 }

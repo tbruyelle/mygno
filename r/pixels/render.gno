@@ -1,6 +1,7 @@
 package pixels
 
 import (
+	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 	"gno.land/p/tom101/svgimg"
@@ -10,7 +11,7 @@ import (
 func Render(path string) string {
 	s := md.H1("Pixels")
 	// WIP not working for now
-	s += "[UpVote](" + txlink.Realm("127.0.0.1:8888/r/leon/hor").Call("Upvote", "pkgpath", "/r/tom101/pixels") + ")\n\n"
+	s += "[UpVote](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 
 	s += md.Paragraph("Remember the " +
 		md.Link("r/place", "https://www.reddit.com/r/place/") +
@@ -65,7 +66,7 @@ func RenderCanvas(id string) string {
 func renderCanvas(c canvas, withTitle bool) string {
 	var s string
 	if withTitle {
-		title := "Canvas #" + c.id
+		title := ufmt.Sprintf("Canvas #%d", c.id)
 		user := users.ResolveAddress(c.creator)
 		if user != nil {
 			title += " (created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")"
@@ -74,7 +75,7 @@ func renderCanvas(c canvas, withTitle bool) string {
 		}
 		s += md.H3(title)
 	}
-	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", c.id, "x", "", "y", "") + ")]"
-	s += svgimg.Render("canvas#"+c.id, c.canvas)
+	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", c.id), "x", "", "y", "") + ")]"
+	s += svgimg.Render(ufmt.Sprintf("canvas#%d",c.id), c.canvas)
 	return s
 }

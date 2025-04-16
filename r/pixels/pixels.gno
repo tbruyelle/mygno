@@ -13,6 +13,7 @@ import (
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
 // - add a hor upvote button directly in the render?
+// - add some tests
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
@@ -34,15 +35,15 @@ func UpdateAdmin(address std.Address) {
 
 func CreateCanvas(fillColor string) seqid.ID {
 	std.AssertOriginCall()
-	return canvasStore.add(std.OriginCaller(), fillColor)
+	return canvasStore.Add(std.OriginCaller(), fillColor)
 }
 
 func DeleteCanvas(id seqid.ID) {
 	std.AssertOriginCall()
-	canvasStore.delete(std.OriginCaller(), id)
+	canvasStore.Delete(std.OriginCaller(), id)
 }
 
 func AddPixel(id seqid.ID, x, y int, color string) {
 	std.AssertOriginCall()
-	canvasStore.addPixel(id, x, y, color)
+	canvasStore.AddPixel(id, x, y, color)
 }

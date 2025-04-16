@@ -48,7 +48,7 @@ func Render(path string) string {
 	} else {
 		canvasStore.byID.Iterate("", "", func(_ string, value any) bool {
 			s += "\n"
-			s += renderCanvas(value.(canvas), true)
+			s += renderCanvas(value.(Canvas), true)
 			return false
 		})
 	}
@@ -60,13 +60,13 @@ func RenderCanvas(id string) string {
 	if !ok {
 		return md.Italic("no canvas found for id " + id)
 	}
-	return renderCanvas(c.(canvas), false)
+	return renderCanvas(c.(Canvas), false)
 }
 
-func renderCanvas(c canvas, withTitle bool) string {
+func renderCanvas(c Canvas, withTitle bool) string {
 	var s string
 	if withTitle {
-		title := ufmt.Sprintf("Canvas #%d", c.id)
+		title := ufmt.Sprintf("Canvas #%d", int(c.id))
 		user := users.ResolveAddress(c.creator)
 		if user != nil {
 			title += " (created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")"
@@ -75,7 +75,8 @@ func renderCanvas(c canvas, withTitle bool) string {
 		}
 		s += md.H3(title)
 	}
+	// TODO fix broken id rep
 	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", c.id), "x", "", "y", "") + ")]"
-	s += svgimg.Render(ufmt.Sprintf("canvas#%d",c.id), c.canvas)
+	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), c.canvas)
 	return s
 }

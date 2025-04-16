@@ -17,11 +17,11 @@ const (
 
 type CanvasStore struct {
 	seq    seqid.ID
-	byID   *avl.Tree
-	byAddr *avl.Tree
+	byID   *avl.Tree // *avl.Tree[CanvasID]Canvas
+	byAddr *avl.Tree // *avl.Tree[std.Address][]CanvasID
 }
 
-type canvas struct {
+type Canvas struct {
 	id      seqid.ID
 	creator std.Address
 	canvas  svg.Canvas
@@ -34,10 +34,9 @@ func newCanvasStore() *CanvasStore {
 	}
 }
 
-func (cs *CanvasStore) add(creator std.Address, fillColor string) seqid.ID {
-	// TODO use binary or base32 with String()?
+func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	id := canvasStore.seq.Next()
-	c := canvas{
+	c := Canvas{
 		id:      id,
 		creator: creator,
 		canvas: svg.Canvas{
@@ -49,7 +48,7 @@ func (cs *CanvasStore) add(creator std.Address, fillColor string) seqid.ID {
 		c.canvas.DrawRectangle(0, 0, width, height, fillColor)
 	}
 	// add to canvasById
-	canvasStore.byID.Set(id.Binary(), c)
+	canvasStore.byID.Set(id.String(), c)
 	// add to canvasBy.Adr
 	idsi, ok := canvasStore.byAddr.Get(creator.String())
 	if ok {
@@ -62,13 +61,13 @@ func (cs *CanvasStore) add(creator std.Address, fillColor string) seqid.ID {
 	return id
 }
 
-func (cs *CanvasStore) delete(caller std.Address, id seqid.ID) {
+func (cs *CanvasStore) Delete(caller std.Address, id seqid.ID) {
 	idsi, ok := canvasStore.byAddr.Get(caller.String())
 	if ok {
 		ids := idsi.([]seqid.ID)
 		for i := range ids {
 			if ids[i] == id {
-				canvasStore.byID.Remove(id.Binary())
+				canvasStore.byID.Remove(id.String())
 				ids = append(ids[:i], ids[i+1:]...)
 				canvasStore.byAddr.Set(caller.String(), ids)
 				return
@@ -78,21 +77,21 @@ func (cs *CanvasStore) delete(caller std.Address, id seqid.ID) {
 	panic(ufmt.Sprintf("canvas %d not found or not created by %s ", id, caller.String()))
 }
 
-func (cs *CanvasStore) get(id seqid.ID) canvas {
-	c, ok := canvasStore.byID.Get(id.Binary())
+func (cs *CanvasStore) Get(id seqid.ID) Canvas {
+	c, ok := canvasStore.byID.Get(id.String())
 	if !ok {
 		panic(ufmt.Sprintf("canvas does not exist for id %d", id))
 	}
-	return c.(canvas)
+	return c.(Canvas)
 }
 
-func (cs *CanvasStore) addPixel(id seqid.ID, x, y int, color string) {
-	c := cs.get(id)
+func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
+	c := cs.Get(id)
 	x *= scale
 	y *= scale
 	if x < 0 || x > c.canvas.Width || y < 0 || y >= c.canvas.Height {
 		panic("x or y out of range")
 	}
 	c.canvas.DrawRectangle(x, y, scale, scale, color)
-	canvasStore.byID.Set(id.Binary(), c)
+	canvasStore.byID.Set(id.String(), c)
 }

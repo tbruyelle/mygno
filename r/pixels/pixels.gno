@@ -14,6 +14,7 @@ import (
 // a sub avl tree?
 // - add a hor upvote button directly in the render?
 // - add some tests
+// - use short seqid.ID for rendering and links, or longer String representation?
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

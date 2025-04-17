@@ -77,16 +77,24 @@ func (cs *CanvasStore) Delete(caller std.Address, id seqid.ID) {
 	panic(ufmt.Sprintf("canvas %d not found or not created by %s ", id, caller.String()))
 }
 
-func (cs *CanvasStore) Get(id seqid.ID) Canvas {
+func (cs *CanvasStore) Get(id seqid.ID) (Canvas, bool) {
 	c, ok := canvasStore.byID.Get(id.String())
+	if !ok {
+		return Canvas{}, false
+	}
+	return c.(Canvas), true
+}
+
+func (cs *CanvasStore) MustGet(id seqid.ID) Canvas {
+	c, ok := canvasStore.Get(id)
 	if !ok {
 		panic(ufmt.Sprintf("canvas does not exist for id %d", id))
 	}
-	return c.(Canvas)
+	return c
 }
 
 func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
-	c := cs.Get(id)
+	c := cs.MustGet(id)
 	x *= scale
 	y *= scale
 	if x < 0 || x > c.canvas.Width || y < 0 || y >= c.canvas.Height {

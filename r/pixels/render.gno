@@ -1,6 +1,7 @@
 package pixels
 
 import (
+	"gno.land/p/demo/seqid"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
@@ -55,12 +56,12 @@ func Render(path string) string {
 	return s
 }
 
-func RenderCanvas(id string) string {
-	c, ok := canvasStore.byID.Get(id)
+func RenderCanvas(id seqid.ID) string {
+	c, ok := canvasStore.Get(id)
 	if !ok {
-		return md.Italic("no canvas found for id " + id)
+		return md.Italic("no canvas found for id " + id.String())
 	}
-	return renderCanvas(c.(Canvas), false)
+	return renderCanvas(c, false)
 }
 
 func renderCanvas(c Canvas, withTitle bool) string {
@@ -75,8 +76,7 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		}
 		s += md.H3(title)
 	}
-	// TODO fix broken id rep
-	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", c.id), "x", "", "y", "") + ")]"
+	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
 	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), c.canvas)
 	return s
 }

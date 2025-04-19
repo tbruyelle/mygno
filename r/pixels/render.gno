@@ -67,16 +67,15 @@ func RenderCanvas(id seqid.ID) string {
 func renderCanvas(c Canvas, withTitle bool) string {
 	var s string
 	if withTitle {
-		title := ufmt.Sprintf("Canvas #%d", int(c.id))
+		s += ufmt.Sprintf("Canvas #%d ", int(c.id))
 		user := users.ResolveAddress(c.creator)
 		if user != nil {
-			title += " (created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")"
+			s += md.Italic("(created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")")
 		} else {
-			title += " (created by " + c.creator.String() + ")"
+			s += md.Italic(" (created by " + c.creator.String() + ")")
 		}
-		s += md.H3(title)
 	}
-	s += "[[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
+	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
 	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), c.canvas)
 	return s
 }

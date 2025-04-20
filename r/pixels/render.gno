@@ -5,6 +5,7 @@ import (
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
+	"gno.land/p/tom101/paginate"
 	"gno.land/p/tom101/svgimg"
 	"gno.land/r/sys/users"
 )
@@ -45,15 +46,15 @@ func Render(path string) string {
 	if canvasStore.byID.Size() == 0 {
 		s += md.Paragraph(md.Italic("No canvas created yet!"))
 	} else {
-		canvasStore.byID.Iterate("", "", func(_ string, value any) bool {
-			s += "\n"
-			s += renderCanvas(value.(Canvas), true)
-			return false
-		})
+		s += paginate.Render(canvasStore.byID, path, 3)
 	}
 	// NOTE: not working with adena see https://github.com/onbloc/adena-wallet/issues/732
 	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 	return s
+}
+
+func (c Canvas) RenderLine() string {
+	return renderCanvas(c, true)
 }
 
 func RenderCanvas(id seqid.ID) string {
@@ -72,7 +73,7 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		if user != nil {
 			s += md.Italic("(created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")")
 		} else {
-			s += md.Italic(" (created by " + c.creator.String() + ")")
+			s += md.Italic("(created by " + c.creator.String() + ")")
 		}
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"

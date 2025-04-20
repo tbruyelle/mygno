@@ -11,8 +11,6 @@ import (
 
 func Render(path string) string {
 	s := md.H1("Pixels")
-	// WIP not working for now
-	s += "[UpVote](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 
 	s += md.Paragraph("Remember the " +
 		md.Link("r/place", "https://www.reddit.com/r/place/") +
@@ -53,6 +51,8 @@ func Render(path string) string {
 			return false
 		})
 	}
+	// NOTE: not working with adena see https://github.com/onbloc/adena-wallet/issues/732
+	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 	return s
 }
 

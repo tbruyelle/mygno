@@ -27,7 +27,6 @@ func AddGnoContrib(gnoContrib string) {
 	additionGnoContribs = append(additionGnoContribs, gnoContrib)
 }
 
-// TODO put each section in store, fill them in init and add tx to update them
 func Render(path string) string {
 	s := md.H1("Tom's Home")
 	s += md.Paragraph("Hello there, I'm Tom, a blockchain engineer at All-In-Bits. Working on improving our future with decentralization!")

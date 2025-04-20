@@ -12,7 +12,6 @@ import (
 // - use p/demo/releases for smooth upgrade
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
-// - add a hor upvote button directly in the render?
 // - add some tests
 // - use short seqid.ID for rendering and links, or longer String representation?
 

@@ -1,5 +1,7 @@
 // Minimalistic pagination package that only expects the avl.Tree values to
 // implement the LineRenderer interface.
+// Pagination is handled thanks to query param ?page=<number> where the number
+// is 1-based, and defaults to 1 if not provided.
 package paginate
 
 import (
@@ -8,7 +10,7 @@ import (
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
-	"gno.land/p/mason/md"
+	"gno.land/p/moul/md"
 )
 
 type LineRenderer interface {
@@ -42,7 +44,7 @@ func Render(t *avl.Tree, path string, limit int) string {
 		s      string
 	)
 	if offset >= total {
-		s += "No item found"
+		s += md.Italic("No item found")
 	} else {
 		t.IterateByOffset(offset, limit, func(_ string, v any) bool {
 			s += v.(LineRenderer).RenderLine()

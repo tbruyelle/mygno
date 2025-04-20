@@ -43,11 +43,7 @@ func Render(path string) string {
 
 	// show top canvas
 	s += md.H2("Top canvas")
-	if canvasStore.byID.Size() == 0 {
-		s += md.Paragraph(md.Italic("No canvas created yet!"))
-	} else {
-		s += paginate.Render(canvasStore.byID, path, 3)
-	}
+	s += paginate.Render(canvasStore.byID, path, 3)
 	// NOTE: not working with adena see https://github.com/onbloc/adena-wallet/issues/732
 	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 	return s

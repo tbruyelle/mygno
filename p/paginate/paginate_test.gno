@@ -36,12 +36,12 @@ func TestRender(t *testing.T) {
 		{
 			path:     "",
 			limit:    5,
-			expected: "01234\n\nPages < 1/2 [>](?page=2)\n\n",
+			expected: "01234\n\nPages < 1/2 [\\>](?page=2)\n\n",
 		},
 		{
 			path:     "?page=1",
 			limit:    5,
-			expected: "01234\n\nPages < 1/2 [>](?page=2)\n\n",
+			expected: "01234\n\nPages < 1/2 [\\>](?page=2)\n\n",
 		},
 		{
 			path:     "?page=2",
@@ -51,12 +51,12 @@ func TestRender(t *testing.T) {
 		{
 			path:     "?page=2",
 			limit:    2,
-			expected: "23\n\nPages [<](?page=1) 2/5 [>](?page=3)\n\n",
+			expected: "23\n\nPages [<](?page=1) 2/5 [\\>](?page=3)\n\n",
 		},
 		{
 			path:     "?page=3",
 			limit:    5,
-			expected: "No item found\n\nPages [<](?page=2) 3/2 >\n\n",
+			expected: "*No item found*\n\nPages [<](?page=2) 3/2 >\n\n",
 		},
 		{
 			path:     "?page=1",
@@ -71,7 +71,7 @@ func TestRender(t *testing.T) {
 		{
 			path:     "?page=1",
 			limit:    8,
-			expected: "01234567\n\nPages < 1/2 [>](?page=2)\n\n",
+			expected: "01234567\n\nPages < 1/2 [\\>](?page=2)\n\n",
 		},
 	}
 	for i, tt := range tests {

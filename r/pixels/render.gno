@@ -20,6 +20,7 @@ func Render(path string) string {
 	s += md.Paragraph("Start now by creating [your own canvas](" + txlink.Call("CreateCanvas", "fillColor", "") + "), or contribute to the top canvas below by adding new pixels!")
 	// NOTE: not working with adena see https://github.com/onbloc/adena-wallet/issues/732
 	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
+	s += md.HorizontalRule()
 
 	// show top canvas
 	// TODO sort by number of pixels

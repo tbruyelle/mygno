@@ -22,7 +22,7 @@ var (
 
 func init() {
 	canvasStore = newCanvasStore()
-	hor.Register("Pixels", "A gno implementation of the `r/place` subreddit.")
+	cross(hor.Register)("Pixels", "A gno implementation of the `r/place` subreddit.")
 }
 
 func UpdateAdmin(address std.Address) {

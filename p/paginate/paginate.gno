@@ -38,7 +38,6 @@ func Render(t *avl.Tree, path string, limit int) string {
 	if limit == 0 || limit > total {
 		limit = total
 	}
-	totalPages := (total + limit - 1) / limit
 	var (
 		offset = (page - 1) * limit
 		s      string
@@ -57,6 +56,10 @@ func Render(t *avl.Tree, path string, limit int) string {
 		s += md.Link("<", ufmt.Sprintf("?page=%d", page-1))
 	} else {
 		s += "<"
+	}
+	totalPages := 1
+	if limit > 0 {
+		totalPages = (total + limit - 1) / limit
 	}
 	s += " " + strconv.Itoa(page) + "/" + strconv.Itoa(totalPages) + " "
 	if page < totalPages {

@@ -5,7 +5,6 @@ import (
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
-	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
 )
 
@@ -22,9 +21,17 @@ type CanvasStore struct {
 }
 
 type Canvas struct {
-	id      seqid.ID
-	creator std.Address
-	canvas  svg.Canvas
+	id        seqid.ID
+	creator   std.Address
+	width     int
+	height    int
+	fillColor string
+	pixels    []pixel
+}
+
+type pixel struct {
+	x, y  int
+	color string
 }
 
 func newCanvasStore() *CanvasStore {
@@ -37,15 +44,12 @@ func newCanvasStore() *CanvasStore {
 func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	id := canvasStore.seq.Next()
 	c := Canvas{
-		id:      id,
-		creator: creator,
-		canvas: svg.Canvas{
-			Width:  width,
-			Height: height,
-		},
-	}
-	if fillColor != "" {
-		c.canvas.DrawRectangle(0, 0, width, height, fillColor)
+		id:        id,
+		creator:   creator,
+		width:     width,
+		height:    height,
+		fillColor: fillColor,
+		pixels:    []pixel{},
 	}
 	// add to canvasById
 	canvasStore.byID.Set(id.String(), c)
@@ -97,9 +101,9 @@ func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
 	c := cs.MustGet(id)
 	x *= scale
 	y *= scale
-	if x < 0 || x > c.canvas.Width || y < 0 || y >= c.canvas.Height {
+	if x < 0 || x > c.width || y < 0 || y >= c.height {
 		panic("x or y out of range")
 	}
-	c.canvas.DrawRectangle(x, y, scale, scale, color)
+	c.pixels = append(c.pixels, pixel{x, y, color})
 	canvasStore.byID.Set(id.String(), c)
 }

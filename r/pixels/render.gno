@@ -2,6 +2,7 @@ package pixels
 
 import (
 	"gno.land/p/demo/seqid"
+	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
@@ -17,7 +18,8 @@ func Render(path string) string {
 		md.Link("r/place", "https://www.reddit.com/r/place/") +
 		" subreddit ? `r/pixels` is the gno realm equivalent of that.")
 	s += md.Blockquote("There is an empty canvas. You may place a pixel upon it. Individually you can create something. Together you can create something more.") + "\n\n"
-	s += md.Paragraph("Start now by creating [your own canvas](" + txlink.Call("CreateCanvas", "fillColor", "") + "), or contribute to the top canvas below by adding new pixels!")
+	s += md.H3("Start now by creating [your own canvas](" + txlink.Call("CreateCanvas", "fillColor", "") + ")")
+	s += md.Paragraph("or contribute to the top canvas below by adding new pixels!")
 	// NOTE: not working with adena
 	// see https://github.com/onbloc/adena-wallet/issues/732
 	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
@@ -78,6 +80,17 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		}
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
-	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), c.canvas)
+	// build svg canvas
+	canvas := svg.Canvas{
+		Width:  c.width,
+		Height: c.height,
+	}
+	if c.fillColor != "" {
+		canvas.DrawRectangle(0, 0, width, height, c.fillColor)
+	}
+	for _, p := range c.pixels {
+		canvas.DrawRectangle(p.x, p.y, scale, scale, p.color)
+	}
+	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), canvas)
 	return s
 }

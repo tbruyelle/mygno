@@ -9,8 +9,6 @@ import (
 
 // TODO
 // - list of canvas with the most gas used or most pixels
-// - find a way to optimize gas consuption: for example store each coords a
-// a sub avl tree?
 // - add some tests (hard to test outside /gno main repo it seems)
 
 var (

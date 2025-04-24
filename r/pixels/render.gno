@@ -18,7 +18,8 @@ func Render(path string) string {
 		" subreddit ? `r/pixels` is the gno realm equivalent of that.")
 	s += md.Blockquote("There is an empty canvas. You may place a pixel upon it. Individually you can create something. Together you can create something more.") + "\n\n"
 	s += md.Paragraph("Start now by creating [your own canvas](" + txlink.Call("CreateCanvas", "fillColor", "") + "), or contribute to the top canvas below by adding new pixels!")
-	// NOTE: not working with adena see https://github.com/onbloc/adena-wallet/issues/732
+	// NOTE: not working with adena
+	// see https://github.com/onbloc/adena-wallet/issues/732
 	s += "[Vote for this realm in Hall of Realms](" + txlink.Realm("gno.land/r/leon/hor").Call("Upvote", "pkgpath", "gno.land/r/tom101/pixels") + ")\n\n"
 	s += md.HorizontalRule()
 

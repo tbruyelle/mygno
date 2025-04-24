@@ -9,11 +9,9 @@ import (
 
 // TODO
 // - list of canvas with the most gas used or most pixels
-// - use p/demo/releases for smooth upgrade
 // - find a way to optimize gas consuption: for example store each coords a
 // a sub avl tree?
-// - add some tests
-// - use short seqid.ID for rendering and links, or longer String representation?
+// - add some tests (hard to test outside /gno main repo it seems)
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
@@ -22,6 +20,7 @@ var (
 
 func init() {
 	canvasStore = newCanvasStore()
+	// TODO make gnoverse/gnopls works with cross
 	cross(hor.Register)("Pixels", "A gno implementation of the `r/place` subreddit.")
 }
 

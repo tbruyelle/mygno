@@ -23,6 +23,7 @@ func init() {
 }
 
 func UpdateAdmin(address std.Address) {
+	crossing()
 	caller := std.OriginCaller()
 	if caller != admin {
 		panic("restricted area")
@@ -31,16 +32,19 @@ func UpdateAdmin(address std.Address) {
 }
 
 func CreateCanvas(fillColor string) seqid.ID {
+	crossing()
 	std.AssertOriginCall()
 	return canvasStore.Add(std.OriginCaller(), fillColor)
 }
 
 func DeleteCanvas(id seqid.ID) {
+	crossing()
 	std.AssertOriginCall()
 	canvasStore.Delete(std.OriginCaller(), id)
 }
 
 func AddPixel(id seqid.ID, x, y int, color string) {
+	crossing()
 	std.AssertOriginCall()
 	canvasStore.AddPixel(id, x, y, color)
 }

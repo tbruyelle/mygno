@@ -15,9 +15,18 @@ const (
 )
 
 type CanvasStore struct {
-	seq    seqid.ID
-	byID   *avl.Tree // *avl.Tree[CanvasID]Canvas
-	byAddr *avl.Tree // *avl.Tree[std.Address][]CanvasID
+	seq         seqid.ID
+	byID        *avl.Tree // *avl.Tree[seqid.ID]Canvas
+	byAddr      *avl.Tree // *avl.Tree[std.Address][]seqid.ID
+	byNumPixels *avl.Tree //*avl.Tree[numPixels:seqid.ID]CanvasID
+}
+
+type CanvasID seqid.ID
+
+// RenderLine implements p/tom101/paginate.LineRenderer
+func (id CanvasID) RenderLine() string {
+	c := canvasStore.MustGet(seqid.ID(id))
+	return c.RenderLine()
 }
 
 type Canvas struct {
@@ -29,6 +38,11 @@ type Canvas struct {
 	pixels    []pixel
 }
 
+// RenderLine implements p/tom101/paginate.LineRenderer
+func (c Canvas) RenderLine() string {
+	return renderCanvas(c, true)
+}
+
 type pixel struct {
 	x, y  int
 	color string
@@ -36,8 +50,9 @@ type pixel struct {
 
 func newCanvasStore() *CanvasStore {
 	return &CanvasStore{
-		byID:   avl.NewTree(),
-		byAddr: avl.NewTree(),
+		byID:        avl.NewTree(),
+		byAddr:      avl.NewTree(),
+		byNumPixels: avl.NewTree(),
 	}
 }
 
@@ -51,9 +66,9 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 		fillColor: fillColor,
 		pixels:    []pixel{},
 	}
-	// add to canvasById
+	// add to ByID
 	canvasStore.byID.Set(id.String(), c)
-	// add to canvasBy.Adr
+	// add to ByAddr
 	idsi, ok := canvasStore.byAddr.Get(creator.String())
 	if ok {
 		ids := idsi.([]seqid.ID)
@@ -62,6 +77,8 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	} else {
 		canvasStore.byAddr.Set(creator.String(), []seqid.ID{id})
 	}
+	// add to ByNumPixels
+	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	return id
 }
 
@@ -71,9 +88,11 @@ func (cs *CanvasStore) Delete(caller std.Address, id seqid.ID) {
 		ids := idsi.([]seqid.ID)
 		for i := range ids {
 			if ids[i] == id {
+				c := cs.MustGet(id)
 				canvasStore.byID.Remove(id.String())
 				ids = append(ids[:i], ids[i+1:]...)
 				canvasStore.byAddr.Set(caller.String(), ids)
+				canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
 				return
 			}
 		}
@@ -104,6 +123,14 @@ func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
 	if x < 0 || x > c.width || y < 0 || y >= c.height {
 		panic("x or y out of range")
 	}
+	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
 	c.pixels = append(c.pixels, pixel{x, y, color})
+	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	canvasStore.byID.Set(id.String(), c)
+}
+
+func getNumPixelsKey(c Canvas) string {
+	// numPixels := strconv.Itoa(len(c.pixels))
+	// paddedNumPixels := strings.Repeat("0", 10-len(numPixels)) + numPixels
+	return seqid.ID(len(c.pixels)).String() + ":" + c.id.String()
 }

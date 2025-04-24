@@ -20,7 +20,15 @@ type LineRenderer interface {
 	RenderLine() string
 }
 
-func Render(t *avl.Tree, path string, limit int) string {
+func Render(t avl.ITree, path string, limit int) string {
+	return render(t, path, limit, false)
+}
+
+func RenderReverse(t avl.ITree, path string, limit int) string {
+	return render(t, path, limit, true)
+}
+
+func render(t avl.ITree, path string, limit int, reverse bool) string {
 	if len(path) > 0 && path[0] == '?' {
 		path = path[1:]
 	}
@@ -45,7 +53,11 @@ func Render(t *avl.Tree, path string, limit int) string {
 	if offset >= total {
 		s += md.Italic("No item found")
 	} else {
-		t.IterateByOffset(offset, limit, func(_ string, v any) bool {
+		iterate := t.IterateByOffset
+		if reverse {
+			iterate = t.ReverseIterateByOffset
+		}
+		iterate(offset, limit, func(_ string, v any) bool {
 			s += v.(LineRenderer).RenderLine()
 			return false
 		})

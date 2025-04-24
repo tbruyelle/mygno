@@ -10,6 +10,8 @@ import (
 // TODO
 // - list of canvas with the most gas used or most pixels
 // - add some tests (hard to test outside /gno main repo it seems)
+// - add canvas contributors
+// - add number of pixels & contributors in render
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

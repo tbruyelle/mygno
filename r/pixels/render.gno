@@ -28,7 +28,7 @@ func Render(path string) string {
 	// show top canvas
 	// TODO sort by number of pixels
 	s += md.H2("Top canvas🥇")
-	s += paginate.Render(canvasStore.byID, path, 3)
+	s += paginate.RenderReverse(canvasStore.byNumPixels, path, 3)
 
 	// show caller canvas
 	// NOTE: Not possible to display your canvas until https://github.com/gnolang/gno/issues/4069 is addressed
@@ -54,10 +54,6 @@ func Render(path string) string {
 	*/
 
 	return s
-}
-
-func (c Canvas) RenderLine() string {
-	return renderCanvas(c, true)
 }
 
 func RenderCanvas(id seqid.ID) string {

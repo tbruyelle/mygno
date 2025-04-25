@@ -1,4 +1,4 @@
-// Pixel extractor from input image to submit on `/r/tom101/pixels`
+// Draw input image to `/r/tom101/pixels`
 package main
 
 import (
@@ -19,7 +19,7 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: extpix <id> <image>\n")
+	fmt.Fprintf(os.Stderr, "Usage: draw <id> <image>\n")
 }
 
 // gno-logo.png (28x47) dx=80 dy=30
@@ -28,7 +28,7 @@ func usage() {
 
 func main() {
 	var (
-		fs         = flag.NewFlagSet("extpix", flag.ContinueOnError)
+		fs         = flag.NewFlagSet("draw", flag.ContinueOnError)
 		dx         = fs.Int("dx", 0, "x offset")
 		dy         = fs.Int("dy", 0, "y offset")
 		addr       = fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")

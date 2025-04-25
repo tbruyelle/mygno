@@ -1,4 +1,4 @@
-module extpix
+module github.com/tbruyelle/mygno/cmd/draw
 
 go 1.24.0
 

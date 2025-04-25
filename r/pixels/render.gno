@@ -73,7 +73,7 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		if user != nil {
 			author = user.RenderLink("")
 		}
-		s += md.Italic(ufmt.Sprintf("author:%s pixel(s):%d", author, len(c.pixels)))
+		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, len(c.pixels), len(c.contributors)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
 	// build svg canvas

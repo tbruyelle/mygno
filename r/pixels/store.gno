@@ -30,17 +30,27 @@ func (id CanvasID) RenderLine() string {
 }
 
 type Canvas struct {
-	id        seqid.ID
-	creator   std.Address
-	width     int
-	height    int
-	fillColor string
-	pixels    []pixel
+	id           seqid.ID
+	creator      std.Address
+	contributors []std.Address
+	width        int
+	height       int
+	fillColor    string
+	pixels       []pixel
 }
 
 // RenderLine implements p/tom101/paginate.LineRenderer
 func (c Canvas) RenderLine() string {
 	return renderCanvas(c, true)
+}
+
+func (c Canvas) hasContributor(contributor std.Address) bool {
+	for _, ct := range c.contributors {
+		if ct == contributor {
+			return true
+		}
+	}
+	return false
 }
 
 type pixel struct {
@@ -116,7 +126,7 @@ func (cs *CanvasStore) MustGet(id seqid.ID) Canvas {
 	return c
 }
 
-func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
+func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color string) {
 	c := cs.MustGet(id)
 	x *= scale
 	y *= scale
@@ -125,6 +135,9 @@ func (cs *CanvasStore) AddPixel(id seqid.ID, x, y int, color string) {
 	}
 	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
 	c.pixels = append(c.pixels, pixel{x, y, color})
+	if !c.hasContributor(from) {
+		c.contributors = append(c.contributors, from)
+	}
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	canvasStore.byID.Set(id.String(), c)
 }

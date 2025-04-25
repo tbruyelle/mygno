@@ -8,10 +8,9 @@ import (
 )
 
 // TODO
-// - list of canvas with the most gas used or most pixels
 // - add some tests (hard to test outside /gno main repo it seems)
-// - add canvas contributors and render them
 // - add link to home in bio user registration
+// - list contributors somewhere? Need a single page display
 // - add title to canvas?
 
 var (
@@ -49,5 +48,5 @@ func DeleteCanvas(id seqid.ID) {
 func AddPixel(id seqid.ID, x, y int, color string) {
 	crossing()
 	std.AssertOriginCall()
-	canvasStore.AddPixel(id, x, y, color)
+	canvasStore.AddPixel(std.OriginCaller(), id, x, y, color)
 }

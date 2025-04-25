@@ -12,6 +12,8 @@ import (
 // - add link to home in bio user registration
 // - list contributors somewhere? Need a single page display
 // - add title to canvas?
+// - perf: store pixel x,y and canvas width/height as strings
+// - perf: improve render
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

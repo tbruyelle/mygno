@@ -31,7 +31,7 @@ func main() {
 	// default is tom101 address
 	addr := fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")
 	// default is min gas required for empty canvas
-	gasInit := fs.Float64("gas", 3000000, "gas wanted for first tx")
+	gasInit := fs.Float64("gas", 10000000, "gas wanted for first tx")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		usage()

@@ -2,12 +2,10 @@ package pixels
 
 import (
 	"gno.land/p/demo/seqid"
-	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 	"gno.land/p/tom101/paginate"
-	"gno.land/p/tom101/svgimg"
 	"gno.land/r/sys/users"
 )
 
@@ -76,17 +74,6 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, len(c.pixels), len(c.contributors)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
-	// build svg canvas
-	canvas := svg.Canvas{
-		Width:  c.width,
-		Height: c.height,
-	}
-	if c.fillColor != "" {
-		canvas.DrawRectangle(0, 0, width, height, c.fillColor)
-	}
-	for _, p := range c.pixels {
-		canvas.DrawRectangle(p.x, p.y, scale, scale, p.color)
-	}
-	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), canvas)
+	s += c.img
 	return s
 }

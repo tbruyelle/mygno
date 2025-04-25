@@ -68,12 +68,12 @@ func renderCanvas(c Canvas, withTitle bool) string {
 	var s string
 	if withTitle {
 		s += ufmt.Sprintf("Canvas #%d ", int(c.id))
+		author := c.creator.String()
 		user := users.ResolveAddress(c.creator)
 		if user != nil {
-			s += md.Italic("(created by " + md.Link(user.Name(), "/r/"+user.Name()+"/home") + ")")
-		} else {
-			s += md.Italic("(created by " + c.creator.String() + ")")
+			author = user.RenderLink("")
 		}
+		s += md.Italic(ufmt.Sprintf("author:%s pixel(s):%d", author, len(c.pixels)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
 	// build svg canvas

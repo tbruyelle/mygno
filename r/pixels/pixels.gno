@@ -10,10 +10,9 @@ import (
 // TODO
 // - list of canvas with the most gas used or most pixels
 // - add some tests (hard to test outside /gno main repo it seems)
-// - add canvas contributors
-// - add number of pixels & contributors in render
-// - replace user link with r/gnoland/users/v1:<user>
+// - add canvas contributors and render them
 // - add link to home in bio user registration
+// - add title to canvas?
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

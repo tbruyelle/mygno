@@ -12,6 +12,8 @@ import (
 // - add some tests (hard to test outside /gno main repo it seems)
 // - add canvas contributors
 // - add number of pixels & contributors in render
+// - replace user link with r/gnoland/users/v1:<user>
+// - add link to home in bio user registration
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

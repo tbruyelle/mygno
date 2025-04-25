@@ -55,9 +55,7 @@ func main() {
 			"-args", fmt.Sprint(p.y+30),
 			"-args", p.color,
 			"-insecure-password-stdin=true",
-			// "-gas-fee", "1000000ugnot", "-gas-wanted", "5000000", "-broadcast",
-			// TODO increase gas-wanted by 0.005% after each call to handle increase canvas size
-			"-gas-fee", "2000000ugnot", "-gas-wanted", "100000000", "-broadcast",
+			"-gas-fee", "3000ugnot", "-gas-wanted", "30000000", "-broadcast",
 			"-chainid", "dev", "-remote", "tcp://127.0.0.1:26657", addr,
 		)
 		cmd.Stdin = strings.NewReader(pwd + "\n")

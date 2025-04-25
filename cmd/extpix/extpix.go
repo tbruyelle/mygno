@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -21,17 +22,19 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: extpix <id> <image>\n")
 }
 
-// gno-logo.png dx=80 dy=30
-// arm.png dx=50 dy=50
+// gno-logo.png (28x47) dx=80 dy=30
+// arm.png      (32x38) dx=50 dy=50
+// arm2.png     (32x38) dx=50+32+24=106 dy=50
 
 func main() {
-	fs := flag.NewFlagSet("extpix", flag.ContinueOnError)
-	dx := fs.Int("dx", 0, "x offset")
-	dy := fs.Int("dy", 0, "y offset")
-	// default is tom101 address
-	addr := fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")
-	// default is min gas required for empty canvas
-	gasInit := fs.Float64("gas", 3000000, "gas wanted for first tx")
+	var (
+		fs         = flag.NewFlagSet("extpix", flag.ContinueOnError)
+		dx         = fs.Int("dx", 0, "x offset")
+		dy         = fs.Int("dy", 0, "y offset")
+		addr       = fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")
+		startGas   = fs.Float64("start-gas", 3500000, "gas wanted for first tx")
+		startPixel = fs.Int("start-pixel", 0, "send tx after specified pixel")
+	)
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		usage()
@@ -65,12 +68,16 @@ func main() {
 	}
 	var (
 		pwd       = string(bz)
-		gasWanted = *gasInit
+		gasWanted = *startGas
+		totalFee  int64
 	)
 	for i, p := range pixels {
+		if *startPixel > i {
+			continue
+		}
 		// gas-price is 0.001 but a small extra of 0.0001 is needed
 		gasFee := int(gasWanted * .0011)
-		fmt.Println(gasWanted, gasFee)
+		totalFee += int64(gasFee)
 		cmd := exec.Command("gnokey", "maketx", "call",
 			"-pkgpath", "gno.land/r/tom101/pixels",
 			"-func", "AddPixel",
@@ -82,6 +89,7 @@ func main() {
 			"-gas-fee", fmt.Sprintf("%dugnot", gasFee),
 			"-gas-wanted", fmt.Sprintf("%.f", gasWanted),
 			"-broadcast", "-chainid", "dev", "-remote", "tcp://127.0.0.1:26657",
+			"-simulate", "skip",
 			*addr,
 		)
 		cmd.Stdin = strings.NewReader(pwd + "\n")
@@ -89,13 +97,14 @@ func main() {
 		if err != nil {
 			log.Fatalf("error exec cmd %s %+v", string(out), err)
 		}
+		// parse gas used and apply inc gas factor on this
+		gasUsed := parseGasUsed(string(out), gasWanted)
 		fmt.Println(string(out))
-		fmt.Printf("TX %d passed\n", i)
+		fmt.Printf("TX %d passed, Fees consumed %dugnot\n", i, totalFee)
 
-		// inc gas by 0.7%
-		gasWanted *= 1.007
+		// inc gasWanted by 5%
+		gasWanted = gasUsed * 1.05
 	}
-	fmt.Println(len(pixels), "tx passed")
 }
 
 // Get the bi-dimensional pixel array
@@ -133,4 +142,20 @@ type pixel struct {
 	x     int
 	y     int
 	color string
+}
+
+var re = regexp.MustCompile(`GAS USED:\s+(\d+)`)
+
+func parseGasUsed(s string, def float64) float64 {
+	match := re.FindStringSubmatch(s)
+	if len(match) > 1 {
+		gasUsed, err := strconv.ParseFloat(match[1], 64)
+		if err != nil {
+			fmt.Println("Error converting GAS USED value to integer:", err)
+			return def
+		}
+		return gasUsed
+	}
+	fmt.Println("GAS USED value not found")
+	return def
 }

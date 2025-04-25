@@ -2,7 +2,6 @@ package pixels
 
 import (
 	"gno.land/p/demo/seqid"
-	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
@@ -77,16 +76,14 @@ func renderCanvas(c Canvas, withTitle bool) string {
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
 	// build svg canvas
-	canvas := svg.Canvas{
-		Width:  c.width,
-		Height: c.height,
-	}
+	svg := ufmt.Sprintf("<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d'>", c.width, c.height)
 	if c.fillColor != "" {
-		canvas.DrawRectangle(0, 0, width, height, c.fillColor)
+		svg += ufmt.Sprintf("<rect x='0' y='0' width='%d' height='%d' fill='%s' />", c.width, c.height, c.fillColor)
 	}
 	for _, p := range c.pixels {
-		canvas.DrawRectangle(p.x, p.y, scale, scale, p.color)
+		svg += ufmt.Sprintf("<rect x='%d' y='%d' width='%d' height='%d' fill='%s' />", p.x, p.y, scale, scale, p.color)
 	}
-	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), canvas)
+	svg += "</svg>"
+	s += svgimg.RenderRaw(ufmt.Sprintf("canvas#%d", int(c.id)), svg)
 	return s
 }

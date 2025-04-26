@@ -2,6 +2,7 @@ package pixels
 
 import (
 	"std"
+	"strconv"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
@@ -13,6 +14,8 @@ const (
 	width  = 800
 	height = 600
 )
+
+var sscale = strconv.Itoa(scale)
 
 type CanvasStore struct {
 	seq         seqid.ID
@@ -54,7 +57,7 @@ func (c Canvas) hasContributor(contributor std.Address) bool {
 }
 
 type pixel struct {
-	x, y  int
+	x, y  string
 	color string
 }
 
@@ -134,7 +137,11 @@ func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color s
 		panic("x or y out of range")
 	}
 	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
-	c.pixels = append(c.pixels, pixel{x, y, color})
+	c.pixels = append(c.pixels, pixel{
+		// NOTE: we use string to limit allocation when rendering
+		x:     ufmt.Sprint(x),
+		y:     ufmt.Sprint(y),
+		color: color})
 	if !c.hasContributor(from) {
 		c.contributors = append(c.contributors, from)
 	}

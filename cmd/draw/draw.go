@@ -32,7 +32,7 @@ func main() {
 		dx         = fs.Int("dx", 0, "x offset")
 		dy         = fs.Int("dy", 0, "y offset")
 		addr       = fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")
-		startGas   = fs.Float64("start-gas", 3500000, "gas wanted for first tx")
+		startGas   = fs.Float64("start-gas", 3000000, "gas wanted for first tx")
 		startPixel = fs.Int("start-pixel", 0, "send tx after specified pixel")
 	)
 

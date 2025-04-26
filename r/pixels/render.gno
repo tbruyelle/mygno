@@ -6,7 +6,6 @@ import (
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 	"gno.land/p/tom101/paginate"
-	"gno.land/p/tom101/svgimg"
 	"gno.land/r/sys/users"
 )
 
@@ -75,15 +74,6 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, len(c.pixels), len(c.contributors)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
-	// build svg canvas
-	svg := ufmt.Sprintf("<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d'>", c.width, c.height)
-	if c.fillColor != "" {
-		svg += ufmt.Sprintf("<rect x='0' y='0' width='%d' height='%d' fill='%s' />", c.width, c.height, c.fillColor)
-	}
-	for _, p := range c.pixels {
-		svg += ufmt.Sprintf("<rect x='%d' y='%d' width='%d' height='%d' fill='%s' />", p.x, p.y, scale, scale, p.color)
-	}
-	svg += "</svg>"
-	s += svgimg.RenderRaw(ufmt.Sprintf("canvas#%d", int(c.id)), svg)
+	s += c.img
 	return s
 }

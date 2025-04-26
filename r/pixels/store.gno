@@ -5,7 +5,9 @@ import (
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
+	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
+	"gno.land/p/tom101/svgimg"
 )
 
 const (
@@ -37,6 +39,7 @@ type Canvas struct {
 	height       int
 	fillColor    string
 	pixels       []pixel
+	img          string
 }
 
 // RenderLine implements p/tom101/paginate.LineRenderer
@@ -76,6 +79,7 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 		fillColor: fillColor,
 		pixels:    []pixel{},
 	}
+	c.img = svgBase64(c)
 	// add to ByID
 	canvasStore.byID.Set(id.String(), c)
 	// add to ByAddr
@@ -90,6 +94,20 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	// add to ByNumPixels
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	return id
+}
+
+func svgBase64(c Canvas) string {
+	canvas := svg.Canvas{
+		Width:  c.width,
+		Height: c.height,
+	}
+	if c.fillColor != "" {
+		canvas.DrawRectangle(0, 0, width, height, c.fillColor)
+	}
+	for _, p := range c.pixels {
+		canvas.DrawRectangle(p.x, p.y, scale, scale, p.color)
+	}
+	return svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), canvas)
 }
 
 func (cs *CanvasStore) Delete(caller std.Address, id seqid.ID) {
@@ -138,6 +156,7 @@ func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color s
 	if !c.hasContributor(from) {
 		c.contributors = append(c.contributors, from)
 	}
+	c.img = svgBase64(c)
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	canvasStore.byID.Set(id.String(), c)
 }

@@ -22,8 +22,8 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: draw <id> <image>\n")
 }
 
-// gno-logo.png (28x47) dx=80 dy=30
-// arm.png      (32x38) dx=50 dy=50
+// gno-logo.png (28x47) dx=80           dy=30 fees=75,718,819ugnot
+// arm.png      (32x38) dx=50           dy=50
 // arm2.png     (32x38) dx=50+32+24=106 dy=50
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 		dx         = fs.Int("dx", 0, "x offset")
 		dy         = fs.Int("dy", 0, "y offset")
 		addr       = fs.String("addr", "g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7", "signer address")
-		startGas   = fs.Float64("start-gas", 3000000, "gas wanted for first tx")
+		startGas   = fs.Float64("start-gas", 10000000, "gas wanted for first tx")
 		startPixel = fs.Int("start-pixel", 0, "send tx after specified pixel")
 	)
 
@@ -102,8 +102,8 @@ func main() {
 		fmt.Println(string(out))
 		fmt.Printf("TX %d passed, Fees consumed %dugnot\n", i, totalFee)
 
-		// inc gasWanted by 5%
-		gasWanted = gasUsed * 1.05
+		// inc gasWanted by 3%
+		gasWanted = gasUsed * 1.03
 	}
 }
 

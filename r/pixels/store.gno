@@ -2,12 +2,11 @@ package pixels
 
 import (
 	"std"
+	"strconv"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
-	"gno.land/p/demo/svg"
 	"gno.land/p/demo/ufmt"
-	"gno.land/p/tom101/svgimg"
 )
 
 const (
@@ -57,7 +56,7 @@ func (c Canvas) hasContributor(contributor std.Address) bool {
 }
 
 type pixel struct {
-	x, y  int
+	x, y  string // use string to avoid conversion for rendering
 	color string
 }
 
@@ -94,20 +93,6 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	// add to ByNumPixels
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	return id
-}
-
-func svgBase64(c Canvas) string {
-	canvas := svg.Canvas{
-		Width:  c.width,
-		Height: c.height,
-	}
-	if c.fillColor != "" {
-		canvas.DrawRectangle(0, 0, width, height, c.fillColor)
-	}
-	for _, p := range c.pixels {
-		canvas.DrawRectangle(p.x, p.y, scale, scale, p.color)
-	}
-	return svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), canvas)
 }
 
 func (cs *CanvasStore) Delete(caller std.Address, id seqid.ID) {
@@ -152,7 +137,11 @@ func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color s
 		panic("x or y out of range")
 	}
 	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
-	c.pixels = append(c.pixels, pixel{x, y, color})
+	c.pixels = append(c.pixels, pixel{
+		x:     strconv.Itoa(x),
+		y:     strconv.Itoa(y),
+		color: color,
+	})
 	if !c.hasContributor(from) {
 		c.contributors = append(c.contributors, from)
 	}

@@ -5,6 +5,7 @@ import (
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
+	"gno.land/p/tom101/bmp"
 	"gno.land/p/tom101/paginate"
 	"gno.land/r/sys/users"
 )
@@ -74,6 +75,6 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, len(c.pixels), len(c.contributors)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
-	s += c.img
+	s += md.Image(ufmt.Sprintf("canvas#%d", int(c.id)), c.img)
 	return s
 }

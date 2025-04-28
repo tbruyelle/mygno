@@ -135,6 +135,10 @@ func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color s
 	}
 	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
 	// append pixel to paths by color
+	// NOTE: this is for performance reason. Storing each pixel in a separate
+	// rectangle triggers too many allocations when the number of pixels is large.
+	// The caveat is some pixels might not be overriden if the color is already
+	// set and comes prior to an other path that overrides that pixel.
 	c.paths[color] = c.paths[color] + ufmt.Sprintf("M%d %dh1v1h-1", x, y)
 	if !c.hasContributor(from) {
 		c.contributors = append(c.contributors, from)

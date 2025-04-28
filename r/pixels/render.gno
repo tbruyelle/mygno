@@ -1,12 +1,14 @@
 package pixels
 
 import (
+	"strings"
+
 	"gno.land/p/demo/seqid"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
-	"gno.land/p/tom101/bmp"
 	"gno.land/p/tom101/paginate"
+	"gno.land/p/tom101/svgimg"
 	"gno.land/r/sys/users"
 )
 
@@ -72,9 +74,22 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		if user != nil {
 			author = user.RenderLink("")
 		}
-		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, len(c.pixels), len(c.contributors)))
+		s += md.Italic(ufmt.Sprintf("-created by %s with %d pixel(s) from %d contributor(s)-", author, c.numPixels, len(c.contributors)))
 	}
 	s += " [[Add a pixel](" + txlink.Call("AddPixel", "id", ufmt.Sprintf("%d", int(c.id)), "x", "", "y", "") + ")]"
-	s += md.Image(ufmt.Sprintf("canvas#%d", int(c.id)), c.img)
+	// Create the svg
+	var svg strings.Builder
+	ufmt.Fprintf(&svg,
+		"<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d' viewBox='0 0 %d %d'>",
+		c.width, c.height, c.width/scale, c.height/scale,
+	)
+	if c.fillColor != "" {
+		ufmt.Fprintf(&svg, "<rect width='100%%' height='100%%' fill='%s'/>", c.fillColor)
+	}
+	for color, path := range c.paths {
+		ufmt.Fprintf(&svg, "<path d='%s' fill='%s'/>", path, color)
+	}
+	svg.WriteString("</svg>")
+	s += svgimg.RenderRaw(ufmt.Sprintf("canvas#%d", int(c.id)), svg.String())
 	return s
 }

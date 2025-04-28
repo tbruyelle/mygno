@@ -2,7 +2,6 @@ run:
 	gnodev -resolver local=/home/tom/src/mygno/r/pixels/ \
 		-resolver local=/home/tom/src/mygno/p/svgimg \
 		-resolver local=/home/tom/src/mygno/p/paginate \
-		-resolver local=/home/tom/src/mygno/p/bmp \
 		-resolver local=/home/tom/src/mygno/r/home \
 		-resolver root=/home/tom/src/gno/examples/
 

@@ -2,7 +2,6 @@ package pixels
 
 import (
 	"std"
-	"strconv"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
@@ -37,8 +36,9 @@ type Canvas struct {
 	width        int
 	height       int
 	fillColor    string
-	pixels       []pixel
-	img          string
+	numPixels    int
+	// paths key is color, value is content of the svg path "d" attribute
+	paths map[string]string
 }
 
 // RenderLine implements p/tom101/paginate.LineRenderer
@@ -76,9 +76,8 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 		width:     width,
 		height:    height,
 		fillColor: fillColor,
-		pixels:    []pixel{},
+		paths:     make(map[string]string),
 	}
-	c.img = svgBase64(c)
 	// add to ByID
 	canvasStore.byID.Set(id.String(), c)
 	// add to ByAddr
@@ -90,7 +89,7 @@ func (cs *CanvasStore) Add(creator std.Address, fillColor string) seqid.ID {
 	} else {
 		canvasStore.byAddr.Set(creator.String(), []seqid.ID{id})
 	}
-	// add to ByNumPixels
+	// add to ByNumContribs
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	return id
 }
@@ -131,27 +130,21 @@ func (cs *CanvasStore) MustGet(id seqid.ID) Canvas {
 
 func (cs *CanvasStore) AddPixel(from std.Address, id seqid.ID, x, y int, color string) {
 	c := cs.MustGet(id)
-	x *= scale
-	y *= scale
-	if x < 0 || x > c.width || y < 0 || y >= c.height {
+	if x < 0 || x*scale > c.width || y < 0 || y*scale >= c.height {
 		panic("x or y out of range")
 	}
 	canvasStore.byNumPixels.Remove(getNumPixelsKey(c))
-	c.pixels = append(c.pixels, pixel{
-		x:     strconv.Itoa(x),
-		y:     strconv.Itoa(y),
-		color: color,
-	})
+	// append pixel to paths by color
+	c.paths[color] = c.paths[color] + ufmt.Sprintf("M%d %dh1v1h-1", x, y)
 	if !c.hasContributor(from) {
 		c.contributors = append(c.contributors, from)
 	}
-	c.img = svgBase64(c)
+	c.numPixels++
 	canvasStore.byNumPixels.Set(getNumPixelsKey(c), CanvasID(id))
 	canvasStore.byID.Set(id.String(), c)
 }
 
 func getNumPixelsKey(c Canvas) string {
-	// numPixels := strconv.Itoa(len(c.pixels))
-	// paddedNumPixels := strings.Repeat("0", 10-len(numPixels)) + numPixels
-	return seqid.ID(len(c.pixels)).String() + ":" + c.id.String()
+	// paddedNumPixels := strings.Repeat("0", 10-len(c.numPixels)) + numPixels
+	return seqid.ID(c.numPixels).String() + ":" + c.id.String()
 }

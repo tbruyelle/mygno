@@ -9,6 +9,9 @@ import (
 	"gno.land/r/tom101/pixels"
 )
 
+// TODO
+// add guestbook
+
 var (
 	admin               = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")
 	creation            time.Time

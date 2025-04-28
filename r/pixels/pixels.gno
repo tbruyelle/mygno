@@ -14,6 +14,7 @@ import (
 // - add title to canvas?
 // - perf: store pixel x,y and canvas width/height as strings
 // - perf: improve render
+// - doc: mention canvas size somewhere
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

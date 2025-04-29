@@ -12,9 +12,12 @@ import (
 // - add link to home in bio user registration
 // - list contributors somewhere? Need a single page display
 // - add title to canvas?
-// - perf: store pixel x,y and canvas width/height as strings
 // - perf: improve render
 // - doc: mention canvas size somewhere
+// - remove or update svgimg, not that usefull
+// - wait for merge of https://github.com/gnolang/gno/pull/4152
+// - wait for portal loop ready for crossing feature
+// - add top canvas page and paginate only there (top canvas in dashboard only displays the first 3)
 
 var (
 	admin       = std.Address("g1w3saysjxdlsyczysnyfd55tuvhhz5533nef8y7")

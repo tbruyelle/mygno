@@ -13,6 +13,10 @@ import (
 )
 
 func Render(path string) string {
+	return renderDashboard()
+}
+
+func renderDashboard() string {
 	s := md.H1("Pixels✨")
 
 	s += md.Paragraph("Remember the " +
@@ -52,7 +56,8 @@ func Render(path string) string {
 
 	// show top canvas
 	s += md.H2("Top canvas🥇")
-	s += paginate.RenderReverse(canvasStore.byNumPixels, path, 3)
+	s += paginate.RenderReverseHead(canvasStore.byNumPixels, 3)
+	s += md.Link("See all", ":top")
 
 	return s
 }

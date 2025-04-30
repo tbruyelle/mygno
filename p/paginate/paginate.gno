@@ -21,14 +21,22 @@ type LineRenderer interface {
 }
 
 func Render(t avl.ITree, path string, limit int) string {
-	return render(t, path, limit, false)
+	return render(t, path, limit, false, true)
 }
 
 func RenderReverse(t avl.ITree, path string, limit int) string {
-	return render(t, path, limit, true)
+	return render(t, path, limit, true, true)
 }
 
-func render(t avl.ITree, path string, limit int, reverse bool) string {
+func RenderHead(t avl.ITree, limit int) string {
+	return render(t, "", limit, false, false)
+}
+
+func RenderReverseHead(t avl.ITree, limit int) string {
+	return render(t, "", limit, true, false)
+}
+
+func render(t avl.ITree, path string, limit int, reverse, pagination bool) string {
 	if len(path) > 0 && path[0] == '?' {
 		path = path[1:]
 	}
@@ -62,23 +70,25 @@ func render(t avl.ITree, path string, limit int, reverse bool) string {
 			return false
 		})
 	}
-	// Render page links
-	s += "\n\nPages "
-	if page > 1 {
-		s += md.Link("<", ufmt.Sprintf("?page=%d", page-1))
-	} else {
-		s += "<"
+	if pagination {
+		// Render page links
+		s += "\n\nPages "
+		if page > 1 {
+			s += md.Link("<", ufmt.Sprintf("?page=%d", page-1))
+		} else {
+			s += "<"
+		}
+		totalPages := 1
+		if limit > 0 {
+			totalPages = (total + limit - 1) / limit
+		}
+		s += " " + strconv.Itoa(page) + "/" + strconv.Itoa(totalPages) + " "
+		if page < totalPages {
+			s += md.Link(">", ufmt.Sprintf("?page=%d", page+1))
+		} else {
+			s += ">"
+		}
+		s += "\n\n"
 	}
-	totalPages := 1
-	if limit > 0 {
-		totalPages = (total + limit - 1) / limit
-	}
-	s += " " + strconv.Itoa(page) + "/" + strconv.Itoa(totalPages) + " "
-	if page < totalPages {
-		s += md.Link(">", ufmt.Sprintf("?page=%d", page+1))
-	} else {
-		s += ">"
-	}
-	s += "\n\n"
 	return s
 }

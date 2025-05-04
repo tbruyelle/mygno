@@ -95,6 +95,6 @@ func renderCanvas(c Canvas, withTitle bool) string {
 		ufmt.Fprintf(&svg, "<path d='%s' fill='%s'/>", path, color)
 	}
 	svg.WriteString("</svg>")
-	s += svgimg.RenderRaw(ufmt.Sprintf("canvas#%d", int(c.id)), svg.String())
+	s += svgimg.Render(ufmt.Sprintf("canvas#%d", int(c.id)), svg.String())
 	return s
 }
